@@ -27,14 +27,14 @@ export function JoinChallengeForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-white/[0.055] p-5">
-      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-ember/15 text-ember">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-xl rounded-xl border border-zinc-200 bg-white p-5">
+      <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-600">
         <KeyRound className="h-7 w-7" />
       </div>
-      <h1 className="text-2xl font-black tracking-tight text-white">Join a group challenge</h1>
-      <p className="mt-2 text-sm leading-6 text-white/60">Enter the invite code your friend shared.</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-zinc-950">Join a group challenge</h1>
+      <p className="mt-2 text-sm leading-6 text-zinc-500">Enter the invite code your friend shared.</p>
       <input className="input mt-5 uppercase tracking-[0.28em]" value={inviteCode} onChange={(event) => setInviteCode(event.target.value)} placeholder="CODE" required />
-      {error ? <p className="mt-3 text-sm text-coral">{error}</p> : null}
+      {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
       <button type="submit" disabled={saving} className="btn-primary mt-5 w-full">
         {saving ? 'Joining...' : 'Join challenge'}
       </button>

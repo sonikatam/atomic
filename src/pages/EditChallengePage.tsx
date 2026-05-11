@@ -89,12 +89,12 @@ export function EditChallengePage({ selfOnly = false }: { selfOnly?: boolean }) 
   return (
     <div className="space-y-5">
       <div className="mx-auto max-w-3xl">
-        <p className="text-sm font-semibold text-ember">Edit challenge</p>
-        <h1 className="mt-1 text-3xl font-black tracking-tight text-white">{detail.name}</h1>
+        <p className="text-sm font-semibold text-zinc-600">Edit challenge</p>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight text-zinc-950">{detail.name}</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="mx-auto max-w-3xl space-y-5">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-5">
+        <div className="rounded-xl border border-zinc-200 bg-white p-5">
           <div className="grid gap-3">
             <input className="input" value={name} onChange={(event) => setName(event.target.value)} placeholder="Challenge name" required />
             <textarea className="input min-h-24" value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description" />
@@ -107,7 +107,7 @@ export function EditChallengePage({ selfOnly = false }: { selfOnly?: boolean }) 
         </div>
 
         <CreateGoalForm goals={goals} onChange={setGoals} />
-        {error ? <p className="rounded-2xl border border-coral/30 bg-coral/10 px-4 py-3 text-sm text-coral">{error}</p> : null}
+        {error ? <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p> : null}
         <button type="submit" disabled={saving} className="btn-primary w-full">
           <Save className="h-5 w-5" />
           {saving ? 'Saving...' : 'Save changes'}
