@@ -7,8 +7,8 @@ export function GroupFeed({ items, onReact }: { items: ActivityFeedItem[]; onRea
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Group feed</h2>
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/50">{items.length} updates</span>
+        <h2 className="text-xl font-semibold text-zinc-950">Group feed</h2>
+        <span className="rounded-md bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">{items.length} updates</span>
       </div>
       {items.length === 0 ? (
         <EmptyState icon={Activity} title="No feed activity yet" description="Complete a goal and the group feed will start to light up." />

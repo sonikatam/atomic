@@ -22,9 +22,9 @@ export function ChallengeListPage({ type = 'group' }: { type?: 'group' | 'self' 
     <div className="space-y-5">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-sm font-semibold text-ember">{isSelf ? 'Private mode' : 'Social mode'}</p>
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-white">{isSelf ? 'Self Challenges' : 'Group Challenges'}</h1>
-          <p className="mt-2 text-sm text-white/55">{isSelf ? 'Track goals nobody else needs to see.' : 'See your friend groups and their daily progress.'}</p>
+          <p className="text-sm font-semibold text-zinc-600">{isSelf ? 'Private mode' : 'Social mode'}</p>
+          <h1 className="mt-1 text-3xl font-semibold tracking-tight text-zinc-950">{isSelf ? 'Self Challenges' : 'Group Challenges'}</h1>
+          <p className="mt-2 text-sm text-zinc-500">{isSelf ? 'Track goals nobody else needs to see.' : 'See your friend groups and their daily progress.'}</p>
         </div>
         <Link to="/create" className="btn-primary">
           <CirclePlus className="h-5 w-5" />

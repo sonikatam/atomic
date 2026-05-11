@@ -63,44 +63,44 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[2rem] border border-white/10 bg-white/[0.055] p-6">
+      <section className="rounded-xl border border-zinc-200 bg-white p-6">
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
           <div className="max-w-3xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-ember/15 px-3 py-1 text-xs font-bold text-ember">{status}</span>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/55">{isSelf ? 'Private self challenge' : 'Group challenge'}</span>
-              {isSelf ? <Lock className="h-4 w-4 text-white/35" /> : null}
+              <span className="rounded-md bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-600">{status}</span>
+              <span className="rounded-md bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">{isSelf ? 'Private self challenge' : 'Group challenge'}</span>
+              {isSelf ? <Lock className="h-4 w-4 text-zinc-400" /> : null}
             </div>
-            <h1 className="text-4xl font-black tracking-tight text-white">{detail.name}</h1>
-            <p className="mt-3 text-sm leading-7 text-white/60">{detail.description || 'No description yet.'}</p>
-            <div className="mt-5 flex flex-wrap gap-3 text-sm text-white/55">
-              <span className="inline-flex items-center gap-2 rounded-2xl bg-black/20 px-3 py-2">
-                <CalendarDays className="h-4 w-4 text-skyglass" />
+            <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">{detail.name}</h1>
+            <p className="mt-3 text-sm leading-7 text-zinc-500">{detail.description || 'No description yet.'}</p>
+            <div className="mt-5 flex flex-wrap gap-3 text-sm text-zinc-500">
+              <span className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2">
+                <CalendarDays className="h-4 w-4 text-zinc-500" />
                 {formatDateLong(detail.start_date)} to {formatDateLong(detail.end_date)}
               </span>
-              <span className="inline-flex items-center gap-2 rounded-2xl bg-black/20 px-3 py-2">
-                <Flame className="h-4 w-4 text-ember" />
+              <span className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2">
+                <Flame className="h-4 w-4 text-zinc-600" />
                 {detail.current_streak}-day streak
               </span>
               {!isSelf ? (
-                <span className="inline-flex items-center gap-2 rounded-2xl bg-black/20 px-3 py-2">
-                  <UsersRound className="h-4 w-4 text-lime" />
+                <span className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2">
+                  <UsersRound className="h-4 w-4 text-zinc-500" />
                   Code {detail.invite_code}
                 </span>
               ) : null}
               {canEdit ? (
-                <Link to={isSelf ? `/self/${detail.id}/edit` : `/challenges/${detail.id}/edit`} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-3 py-2 font-semibold text-white transition hover:border-ember/40">
-                  <Pencil className="h-4 w-4 text-ember" />
+                <Link to={isSelf ? `/self/${detail.id}/edit` : `/challenges/${detail.id}/edit`} className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 font-semibold text-zinc-950 transition hover:border-zinc-300">
+                  <Pencil className="h-4 w-4 text-zinc-600" />
                   Edit
                 </Link>
               ) : null}
             </div>
           </div>
-          <div className="min-w-56 rounded-3xl border border-white/10 bg-black/20 p-4">
-            <p className="text-sm text-white/50">{daysRemaining(detail.end_date)} days remaining</p>
+          <div className="min-w-56 rounded-xl border border-zinc-200 bg-zinc-50 p-4">
+            <p className="text-sm text-zinc-500">{daysRemaining(detail.end_date)} days remaining</p>
             <div className="mt-3 flex items-end gap-2">
-              <span className="text-4xl font-black text-white">{detail.today_required_completed}</span>
-              <span className="pb-1 text-sm text-white/50">/ {detail.total_required_goals} today</span>
+              <span className="text-3xl font-semibold text-zinc-950">{detail.today_required_completed}</span>
+              <span className="pb-1 text-sm text-zinc-500">/ {detail.total_required_goals} today</span>
             </div>
             <ProgressBar className="mt-4" value={detail.today_required_completed} total={detail.total_required_goals} />
           </div>
@@ -110,15 +110,15 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <section>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Today’s goals</h2>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/50">{todayISO()}</span>
+            <h2 className="text-xl font-semibold text-zinc-950">Today’s goals</h2>
+            <span className="rounded-md bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">{todayISO()}</span>
           </div>
           <GoalChecklist goals={detail.goals} checkins={todayCheckins} userId={profile!.id} onToggle={handleToggle} />
           {isSelf ? (
-            <div className="mt-5 rounded-3xl border border-white/10 bg-white/[0.045] p-5">
+            <div className="mt-5 rounded-xl border border-zinc-200 bg-white p-5">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white">Progress calendar</h2>
-                <Archive className="h-5 w-5 text-white/35" />
+                <h2 className="text-lg font-semibold text-zinc-950">Progress calendar</h2>
+                <Archive className="h-5 w-5 text-zinc-400" />
               </div>
               <CalendarDots completedDays={detail.longest_streak + detail.current_streak} />
               <button className="btn-secondary mt-5 w-full" type="button">Archive when complete</button>
@@ -130,7 +130,7 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
           {isSelf ? null : <Leaderboard entries={detail.leaderboard} />}
           {!isSelf ? (
             <section>
-              <h2 className="mb-4 text-xl font-bold text-white">Member progress</h2>
+              <h2 className="mb-4 text-xl font-semibold text-zinc-950">Member progress</h2>
               <div className="space-y-3">
                 {detail.memberProgress.map((progress) => (
                   <MemberProgressCard key={progress.member.id} progress={progress} />
@@ -150,7 +150,7 @@ function CalendarDots({ completedDays }: { completedDays: number }) {
   return (
     <div className="grid grid-cols-7 gap-2">
       {Array.from({ length: 28 }).map((_, index) => (
-        <div key={index} className={`aspect-square rounded-xl border ${index < completedDays ? 'border-ember/40 bg-ember/70' : 'border-white/10 bg-black/30'}`} />
+        <div key={index} className={`aspect-square rounded-md border ${index < completedDays ? 'border-zinc-900 bg-zinc-900' : 'border-zinc-200 bg-zinc-100'}`} />
       ))}
     </div>
   );

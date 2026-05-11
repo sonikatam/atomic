@@ -25,8 +25,8 @@ export function ProofUploader({ userId, challengeId, goalId, value, onChange }: 
   }
 
   return (
-    <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-white/15 bg-black/20 p-3 text-sm text-white/65 transition hover:border-ember/50 hover:text-white">
-      {value ? <img src={value} alt="Proof preview" className="h-12 w-12 rounded-xl object-cover" /> : <ImagePlus className="h-5 w-5 text-ember" />}
+    <label className="mt-3 flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-950">
+      {value ? <img src={value} alt="Proof preview" className="h-12 w-12 rounded-xl object-cover" /> : <ImagePlus className="h-5 w-5 text-zinc-600" />}
       <span>{loading ? 'Uploading...' : value ? 'Replace photo proof' : 'Add photo proof'}</span>
       <input type="file" accept="image/*" className="hidden" onChange={(event) => handleFile(event.target.files?.[0])} />
     </label>

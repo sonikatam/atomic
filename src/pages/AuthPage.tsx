@@ -1,4 +1,4 @@
-import { Flame } from 'lucide-react';
+import { Circle } from 'lucide-react';
 import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -14,9 +14,9 @@ export function SignupPage() {
 function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   const { profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('maya@example.com');
-  const [password, setPassword] = useState('password123');
-  const [fullName, setFullName] = useState('Maya Chen');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [checkEmail, setCheckEmail] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -47,34 +47,33 @@ function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
   }
 
   return (
-    <div className="min-h-screen bg-ink px-4 py-8 text-white">
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_25%_0%,rgba(255,122,26,0.32),transparent_35%),radial-gradient(circle_at_80%_20%,rgba(183,255,90,0.12),transparent_26%),linear-gradient(180deg,#090A12,#111018)]" />
+    <div className="min-h-screen bg-[#f7f6f3] px-4 py-8 text-zinc-950">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center">
         <div className="grid w-full gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
-            <div className="mb-8 flex items-center gap-3 font-black tracking-tight">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-ember to-coral shadow-glow">
-                <Flame className="h-6 w-6" />
+            <div className="mb-8 flex items-center gap-2 text-sm font-semibold tracking-tight">
+              <span className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-white">
+                <Circle className="h-3.5 w-3.5 fill-zinc-900 text-zinc-900" />
               </span>
-              1% Club
+              atomic
             </div>
-            <h1 className="max-w-2xl text-5xl font-black leading-[0.96] tracking-tight md:text-7xl">Tiny wins, visible momentum.</h1>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-white/65">
+            <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight md:text-6xl">Tiny wins, visible momentum.</h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600">
               Create habit challenges with friends, prove the work, keep your streak alive, and build private goals when the audience is just you.
             </p>
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
               {['Proof', 'Streaks', 'Friends'].map((item) => (
-                <div key={item} className="rounded-3xl border border-white/10 bg-white/[0.055] p-4 text-sm font-bold text-white/70">{item}</div>
+                <div key={item} className="rounded-xl border border-zinc-200 bg-white p-3 text-sm font-medium text-zinc-600">{item}</div>
               ))}
             </div>
           </div>
-          <form onSubmit={handleSubmit} className="rounded-[2rem] border border-white/10 bg-white/[0.07] p-5 shadow-2xl backdrop-blur-xl md:p-7">
-            <h2 className="text-2xl font-black tracking-tight">{mode === 'signup' ? 'Create your club account' : 'Welcome back'}</h2>
-            <p className="mt-2 text-sm leading-6 text-white/55">
+          <form onSubmit={handleSubmit} className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm md:p-7">
+            <h2 className="text-2xl font-semibold tracking-tight">{mode === 'signup' ? 'Create your atomic account' : 'Welcome back'}</h2>
+            <p className="mt-2 text-sm leading-6 text-zinc-500">
               {mode === 'signup' ? 'Start with a profile, then create or join your first challenge.' : 'Log in with your account.'}
             </p>
             {checkEmail ? (
-              <div className="mt-5 rounded-2xl border border-lime/25 bg-lime/10 px-4 py-3 text-sm leading-6 text-lime">
+              <div className="mt-5 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm leading-6 text-zinc-600">
                 Check your email to confirm your account, then come back and log in.
               </div>
             ) : null}
@@ -83,13 +82,13 @@ function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               <input className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email" required />
               <input className="input" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Password" required />
             </div>
-            {error ? <p className="mt-3 rounded-2xl border border-coral/30 bg-coral/10 px-4 py-3 text-sm text-coral">{error}</p> : null}
+            {error ? <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p> : null}
             <button type="submit" disabled={saving} className="btn-primary mt-5 w-full">
               {saving ? 'Working...' : mode === 'signup' ? 'Sign up' : 'Log in'}
             </button>
-            <p className="mt-5 text-center text-sm text-white/50">
+            <p className="mt-5 text-center text-sm text-zinc-500">
               {mode === 'signup' ? 'Already have an account?' : 'New here?'}{' '}
-              <Link className="font-semibold text-ember" to={mode === 'signup' ? '/login' : '/signup'}>
+              <Link className="font-semibold text-zinc-600" to={mode === 'signup' ? '/login' : '/signup'}>
                 {mode === 'signup' ? 'Log in' : 'Sign up'}
               </Link>
             </p>

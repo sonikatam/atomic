@@ -1,10 +1,10 @@
-import { Flame } from 'lucide-react';
+import { Circle } from 'lucide-react';
 
-export function LoadingState({ label = 'Loading your club...' }: { label?: string }) {
+export function LoadingState({ label = 'Loading atomic...' }: { label?: string }) {
   return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 text-white/70">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] shadow-glow">
-        <Flame className="h-7 w-7 animate-pulse text-ember" />
+    <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 text-zinc-600">
+      <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-zinc-200 bg-white shadow-sm">
+        <Circle className="h-7 w-7 animate-pulse text-zinc-600" />
       </div>
       <p className="text-sm">{label}</p>
     </div>
