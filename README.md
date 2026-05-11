@@ -1,5 +1,5 @@
-# 1% Club
+# atomic
 
-https://one-percent-club-three.vercel.app
+https://atomic-three.vercel.app
 
 My friends and I use it to stay accountable.

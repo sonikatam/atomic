@@ -55,7 +55,7 @@ function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
               <span className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-white">
                 <Circle className="h-3.5 w-3.5 fill-zinc-900 text-zinc-900" />
               </span>
-              1% Club
+              atomic
             </div>
             <h1 className="max-w-2xl text-3xl font-semibold leading-tight tracking-tight md:text-6xl">Tiny wins, visible momentum.</h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600">
@@ -68,7 +68,7 @@ function AuthForm({ mode }: { mode: 'login' | 'signup' }) {
             </div>
           </div>
           <form onSubmit={handleSubmit} className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm md:p-7">
-            <h2 className="text-2xl font-semibold tracking-tight">{mode === 'signup' ? 'Create your club account' : 'Welcome back'}</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">{mode === 'signup' ? 'Create your atomic account' : 'Welcome back'}</h2>
             <p className="mt-2 text-sm leading-6 text-zinc-500">
               {mode === 'signup' ? 'Start with a profile, then create or join your first challenge.' : 'Log in with your account.'}
             </p>

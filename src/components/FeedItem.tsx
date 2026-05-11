@@ -15,7 +15,7 @@ export function FeedItem({ item, onReact }: { item: ActivityFeedItem; onReact: (
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-sm font-semibold text-zinc-950">{item.profile?.full_name || 'Club member'}</p>
+              <p className="text-sm font-semibold text-zinc-950">{item.profile?.full_name || 'atomic member'}</p>
               <p className="mt-1 text-sm leading-6 text-zinc-500">{item.message}</p>
             </div>
             <span className="shrink-0 text-xs text-zinc-400">{timeAgo(item.created_at)}</span>

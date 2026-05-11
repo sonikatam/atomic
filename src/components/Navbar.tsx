@@ -19,7 +19,7 @@ export function Navbar() {
             <span className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-200 bg-white">
               <Circle className="h-3.5 w-3.5 fill-zinc-900 text-zinc-900" />
             </span>
-            1% Club
+            atomic
           </NavLink>
           <nav className="flex items-center gap-2">
             {navItems.map((item) => (

@@ -19,7 +19,7 @@ export function ProfilePage() {
         <div className="flex items-center gap-4">
           <img src={profile.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${profile.full_name}`} alt="" className="h-20 w-20 rounded-xl object-cover" />
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">{profile.full_name || '1% Club member'}</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-zinc-950">{profile.full_name || 'atomic member'}</h1>
             <p className="mt-1 flex items-center gap-2 text-sm text-zinc-500">
               <Mail className="h-4 w-4" />
               {profile.email}

@@ -28,7 +28,7 @@ interface MockState {
   currentUserId: string;
 }
 
-const STORAGE_KEY = 'one-percent-club-state-v2';
+const STORAGE_KEY = 'atomic-state-v2';
 
 function seed(): MockState {
   return {
