@@ -1,6 +1,6 @@
-import { Archive, CalendarDays, Flame, Lock, UsersRound } from 'lucide-react';
+import { Archive, CalendarDays, Flame, Lock, Pencil, UsersRound } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { GoalChecklist } from '../components/GoalChecklist';
 import { GroupFeed } from '../components/GroupFeed';
 import { Leaderboard } from '../components/Leaderboard';
@@ -37,6 +37,7 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
   if (selfOnly && detail.type !== 'self') return <Navigate to={`/challenges/${detail.id}`} replace />;
 
   const isSelf = detail.type === 'self';
+  const canEdit = detail.created_by === profile?.id;
   const todayCheckins = detail.checkins.filter((checkin) => checkin.checkin_date === todayISO());
   const status = isBeforeToday(detail.start_date) ? (isBeforeToday(detail.end_date) ? 'Ended' : 'Active') : isAfterToday(detail.start_date) ? 'Not started' : 'Active';
 
@@ -86,6 +87,12 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
                   <UsersRound className="h-4 w-4 text-lime" />
                   Code {detail.invite_code}
                 </span>
+              ) : null}
+              {canEdit ? (
+                <Link to={isSelf ? `/self/${detail.id}/edit` : `/challenges/${detail.id}/edit`} className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.055] px-3 py-2 font-semibold text-white transition hover:border-ember/40">
+                  <Pencil className="h-4 w-4 text-ember" />
+                  Edit
+                </Link>
               ) : null}
             </div>
           </div>

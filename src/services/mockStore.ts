@@ -13,6 +13,7 @@ import type {
   NewChallengeInput,
   Profile,
   Reaction,
+  UpdateChallengeInput,
 } from '../types';
 import { calculateChallengeStreaks, getRequiredCompleted, isDayComplete } from './streakService';
 
@@ -215,6 +216,43 @@ export function createMockChallenge(input: NewChallengeInput, userId: string) {
   state.members.push(member);
   saveMockState(state);
   return buildSummary(challenge, userId, state);
+}
+
+export function updateMockChallenge(input: UpdateChallengeInput, userId: string) {
+  const state = getMockState();
+  const challengeIndex = state.challenges.findIndex((challenge) => challenge.id === input.id && challenge.created_by === userId);
+  if (challengeIndex < 0) throw new Error('You can only edit challenges you created.');
+
+  state.challenges[challengeIndex] = {
+    ...state.challenges[challengeIndex],
+    name: input.name,
+    description: input.description || null,
+    start_date: input.start_date,
+    end_date: input.end_date,
+    reminder_time: input.reminder_time || null,
+  };
+
+  const keptGoalIds = input.goals.map((goal) => goal.id).filter(Boolean);
+  state.goals = state.goals.filter((goal) => goal.challenge_id !== input.id || keptGoalIds.includes(goal.id));
+  for (const goal of input.goals) {
+    const existingIndex = goal.id ? state.goals.findIndex((item) => item.id === goal.id) : -1;
+    const row: Goal = {
+      id: goal.id || uid('goal'),
+      challenge_id: input.id,
+      title: goal.title,
+      description: goal.description || null,
+      required: goal.required,
+      proof_type: goal.proof_type,
+      target_value: goal.target_value ?? null,
+      target_unit: goal.target_unit ?? null,
+      created_at: existingIndex >= 0 ? state.goals[existingIndex].created_at : new Date().toISOString(),
+    };
+    if (existingIndex >= 0) state.goals[existingIndex] = row;
+    else state.goals.push(row);
+  }
+
+  saveMockState(state);
+  return buildSummary(state.challenges[challengeIndex], userId, state);
 }
 
 export function joinMockChallenge(inviteCode: string, userId: string) {

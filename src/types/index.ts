@@ -125,6 +125,7 @@ export interface ChallengeDetail extends ChallengeSummary {
 }
 
 export interface NewGoalInput {
+  id?: string;
   title: string;
   description?: string;
   required: boolean;
@@ -141,6 +142,10 @@ export interface NewChallengeInput {
   end_date: string;
   reminder_time?: string | null;
   goals: NewGoalInput[];
+}
+
+export interface UpdateChallengeInput extends NewChallengeInput {
+  id: string;
 }
 
 export interface CheckinPayload {

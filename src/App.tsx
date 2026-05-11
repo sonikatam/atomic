@@ -7,6 +7,7 @@ import { ChallengeDetailPage } from './pages/ChallengeDetailPage';
 import { ChallengeListPage } from './pages/ChallengeListPage';
 import { CreatePage } from './pages/CreatePage';
 import { DashboardPage } from './pages/DashboardPage';
+import { EditChallengePage } from './pages/EditChallengePage';
 import { JoinPage } from './pages/JoinPage';
 import { ProfilePage } from './pages/ProfilePage';
 
@@ -27,8 +28,10 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/challenges" element={<ChallengeListPage type="group" />} />
         <Route path="/challenges/:id" element={<ChallengeDetailPage />} />
+        <Route path="/challenges/:id/edit" element={<EditChallengePage />} />
         <Route path="/self" element={<ChallengeListPage type="self" />} />
         <Route path="/self/:id" element={<ChallengeDetailPage selfOnly />} />
+        <Route path="/self/:id/edit" element={<EditChallengePage selfOnly />} />
         <Route path="/create" element={<CreatePage />} />
         <Route path="/join" element={<JoinPage />} />
         <Route path="/profile" element={<ProfilePage />} />

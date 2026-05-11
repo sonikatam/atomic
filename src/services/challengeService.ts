@@ -9,9 +9,10 @@ import type {
   Goal,
   NewChallengeInput,
   Profile,
+  UpdateChallengeInput,
 } from '../types';
 import { calculateChallengeStreaks, getRequiredCompleted, isDayComplete } from './streakService';
-import { createMockChallenge, getMockChallengeDetail, getMockChallenges, getMockDashboard, joinMockChallenge } from './mockStore';
+import { createMockChallenge, getMockChallengeDetail, getMockChallenges, getMockDashboard, joinMockChallenge, updateMockChallenge } from './mockStore';
 
 export async function getDashboardData(userId: string) {
   if (!hasSupabaseEnv || !supabase) return getMockDashboard(userId);
@@ -97,10 +98,24 @@ export async function getChallengeDetail(challengeId: string, userId: string): P
 
 export async function createChallenge(input: NewChallengeInput, userId: string) {
   if (!hasSupabaseEnv || !supabase) return createMockChallenge(input, userId);
+  const challengeId = crypto.randomUUID();
   const inviteCode = input.type === 'group' ? generateInviteCode() : null;
-  const { data: challenge, error } = await supabase
+  const challenge: Challenge = {
+    id: challengeId,
+    name: input.name,
+    description: input.description || null,
+    type: input.type,
+    start_date: input.start_date,
+    end_date: input.end_date,
+    reminder_time: input.reminder_time || null,
+    invite_code: inviteCode,
+    created_by: userId,
+    created_at: new Date().toISOString(),
+  };
+  const { error } = await supabase
     .from('challenges')
     .insert({
+      id: challenge.id,
       name: input.name,
       description: input.description || null,
       type: input.type,
@@ -109,9 +124,7 @@ export async function createChallenge(input: NewChallengeInput, userId: string) 
       reminder_time: input.reminder_time || null,
       invite_code: inviteCode,
       created_by: userId,
-    })
-    .select('*')
-    .single();
+    });
   if (error) throw error;
   const { error: memberError } = await supabase.from('challenge_members').insert({ challenge_id: challenge.id, user_id: userId, role: 'owner' });
   if (memberError) throw memberError;
@@ -127,6 +140,57 @@ export async function createChallenge(input: NewChallengeInput, userId: string) 
   }));
   const { error: goalsError } = await supabase.from('goals').insert(goals);
   if (goalsError) throw goalsError;
+  return buildSupabaseSummary(challenge, userId);
+}
+
+export async function updateChallenge(input: UpdateChallengeInput, userId: string) {
+  if (!hasSupabaseEnv || !supabase) {
+    return updateMockChallenge(input, userId);
+  }
+
+  const { data: challenge, error } = await supabase
+    .from('challenges')
+    .update({
+      name: input.name,
+      description: input.description || null,
+      start_date: input.start_date,
+      end_date: input.end_date,
+      reminder_time: input.reminder_time || null,
+    })
+    .eq('id', input.id)
+    .select('*')
+    .single();
+  if (error) throw error;
+
+  const { data: existingGoals, error: existingError } = await supabase.from('goals').select('id').eq('challenge_id', input.id);
+  if (existingError) throw existingError;
+
+  const keptGoalIds = input.goals.map((goal) => goal.id).filter(Boolean);
+  const removedGoalIds = (existingGoals ?? []).map((goal) => goal.id).filter((id) => !keptGoalIds.includes(id));
+  if (removedGoalIds.length > 0) {
+    const { error: deleteError } = await supabase.from('goals').delete().in('id', removedGoalIds);
+    if (deleteError) throw deleteError;
+  }
+
+  for (const goal of input.goals) {
+    const row = {
+      challenge_id: input.id,
+      title: goal.title,
+      description: goal.description || null,
+      required: goal.required,
+      proof_type: goal.proof_type,
+      target_value: goal.target_value ?? null,
+      target_unit: goal.target_unit ?? null,
+    };
+    if (goal.id) {
+      const { error: goalError } = await supabase.from('goals').update(row).eq('id', goal.id);
+      if (goalError) throw goalError;
+    } else {
+      const { error: goalError } = await supabase.from('goals').insert(row);
+      if (goalError) throw goalError;
+    }
+  }
+
   return buildSupabaseSummary(challenge as Challenge, userId);
 }
 
