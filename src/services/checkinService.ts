@@ -19,7 +19,7 @@ export async function upsertCheckin(payload: CheckinPayload): Promise<DailyCheck
   const { data, error } = await supabase.from('daily_checkins').upsert(row, { onConflict: 'goal_id,user_id,checkin_date' }).select('*').single();
   if (error) throw error;
   if (payload.completed) {
-    await supabase.from('activity_feed').insert({
+    const { error: feedError } = await supabase.from('activity_feed').insert({
       challenge_id: payload.challengeId,
       user_id: payload.userId,
       goal_id: payload.goal.id,
@@ -27,6 +27,7 @@ export async function upsertCheckin(payload: CheckinPayload): Promise<DailyCheck
       message: payload.goal.proof_type === 'none' ? `completed ${payload.goal.title}` : `uploaded proof for ${payload.goal.title}`,
       proof_image_url: payload.proofImageUrl || null,
     });
+    if (feedError) throw feedError;
   }
   return data as DailyCheckin;
 }

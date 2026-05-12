@@ -196,13 +196,13 @@ export async function updateChallenge(input: UpdateChallengeInput, userId: strin
 
 export async function joinChallengeByInviteCode(inviteCode: string, userId: string) {
   if (!hasSupabaseEnv || !supabase) return joinMockChallenge(inviteCode, userId);
-  const { data: challenge, error } = await supabase.from('challenges').select('*').eq('invite_code', inviteCode.trim().toUpperCase()).eq('type', 'group').single();
-  if (error || !challenge) throw new Error('Invalid invite code. Double-check the code and try again.');
-  const { data: existing } = await supabase.from('challenge_members').select('id').eq('challenge_id', challenge.id).eq('user_id', userId).maybeSingle();
-  if (existing) throw new Error('You are already in this challenge.');
-  const { error: memberError } = await supabase.from('challenge_members').insert({ challenge_id: challenge.id, user_id: userId, role: 'member' });
-  if (memberError) throw memberError;
-  return buildSupabaseSummary(challenge as Challenge, userId);
+  const { data: challenge, error } = await supabase.rpc('join_challenge_by_invite_code', {
+    raw_invite_code: inviteCode.trim().toUpperCase(),
+  });
+  if (error) throw new Error(error.message);
+  const joinedChallenge = Array.isArray(challenge) ? challenge[0] : challenge;
+  if (!joinedChallenge) throw new Error('Invalid invite code. Double-check the code and try again.');
+  return buildSupabaseSummary(joinedChallenge as Challenge, userId);
 }
 
 async function buildSupabaseSummary(challenge: Challenge, userId: string): Promise<ChallengeSummary> {
