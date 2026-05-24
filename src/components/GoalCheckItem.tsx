@@ -1,5 +1,5 @@
 import { Check, Circle, Hash, Image, MessageSquareText } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { DailyCheckin, Goal } from '../types';
 import { cn } from '../lib/utils';
 import { ProofUploader } from './ProofUploader';
@@ -8,10 +8,11 @@ interface GoalCheckItemProps {
   goal: Goal;
   checkin?: DailyCheckin;
   userId: string;
+  selectedDate: string;
   onToggle: (goal: Goal, payload: { proofImageUrl?: string | null; textResponse?: string | null; numericValue?: number | null; completed: boolean }) => Promise<void>;
 }
 
-export function GoalCheckItem({ goal, checkin, userId, onToggle }: GoalCheckItemProps) {
+export function GoalCheckItem({ goal, checkin, userId, selectedDate, onToggle }: GoalCheckItemProps) {
   const [proofImageUrl, setProofImageUrl] = useState(checkin?.proof_image_url);
   const [textResponse, setTextResponse] = useState(checkin?.text_response || '');
   const [numericValue, setNumericValue] = useState<number | ''>(checkin?.numeric_value ?? '');
@@ -20,21 +21,48 @@ export function GoalCheckItem({ goal, checkin, userId, onToggle }: GoalCheckItem
   const completed = Boolean(checkin?.completed);
   const Icon = goal.proof_type === 'photo' ? Image : goal.proof_type === 'text' ? MessageSquareText : goal.proof_type === 'number' ? Hash : Circle;
 
-  async function toggle() {
+  useEffect(() => {
+    setProofImageUrl(checkin?.proof_image_url);
+    setTextResponse(checkin?.text_response || '');
+    setNumericValue(checkin?.numeric_value ?? '');
+    setError('');
+  }, [checkin, selectedDate]);
+
+  async function save(completedValue: boolean, overrides: { proofImageUrl?: string | null; textResponse?: string | null; numericValue?: number | null } = {}) {
     setSaving(true);
     setError('');
     try {
       await onToggle(goal, {
-        completed: !completed,
-        proofImageUrl,
-        textResponse,
-        numericValue: numericValue === '' ? null : Number(numericValue),
+        completed: completedValue,
+        proofImageUrl: overrides.proofImageUrl ?? proofImageUrl,
+        textResponse: overrides.textResponse ?? textResponse,
+        numericValue: overrides.numericValue ?? (numericValue === '' ? null : Number(numericValue)),
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not save check-in.');
     } finally {
       setSaving(false);
     }
+  }
+
+  async function toggle() {
+    await save(!completed);
+  }
+
+  async function handleProofImageChange(url: string) {
+    setProofImageUrl(url);
+    await save(true, { proofImageUrl: url });
+  }
+
+  async function handleTextBlur() {
+    const value = textResponse.trim();
+    if (!value) return;
+    await save(true, { textResponse: value });
+  }
+
+  async function handleNumberBlur() {
+    if (numericValue === '') return;
+    await save(true, { numericValue: Number(numericValue) });
   }
 
   return (
@@ -60,11 +88,12 @@ export function GoalCheckItem({ goal, checkin, userId, onToggle }: GoalCheckItem
             {goal.proof_type === 'none' ? 'No proof required' : `${goal.proof_type} proof`}
             {goal.target_value ? <span>{goal.target_value} {goal.target_unit}</span> : null}
           </div>
-          {goal.proof_type === 'photo' ? <ProofUploader userId={userId} challengeId={goal.challenge_id} goalId={goal.id} value={proofImageUrl} onChange={setProofImageUrl} /> : null}
+          {goal.proof_type === 'photo' ? <ProofUploader userId={userId} challengeId={goal.challenge_id} goalId={goal.id} checkinDate={selectedDate} value={proofImageUrl} onChange={handleProofImageChange} /> : null}
           {goal.proof_type === 'text' ? (
             <textarea
               value={textResponse}
               onChange={(event) => setTextResponse(event.target.value)}
+              onBlur={handleTextBlur}
               placeholder="Add your proof note..."
               className="mt-3 min-h-20 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-950 outline-none ring-zinc-900/10 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-2"
             />
@@ -74,6 +103,7 @@ export function GoalCheckItem({ goal, checkin, userId, onToggle }: GoalCheckItem
               type="number"
               value={numericValue}
               onChange={(event) => setNumericValue(event.target.value === '' ? '' : Number(event.target.value))}
+              onBlur={handleNumberBlur}
               placeholder={`Enter ${goal.target_unit || 'value'}`}
               className="mt-3 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-950 outline-none ring-zinc-900/10 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-2"
             />

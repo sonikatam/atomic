@@ -7,10 +7,11 @@ interface GoalChecklistProps {
   goals: Goal[];
   checkins: DailyCheckin[];
   userId: string;
+  selectedDate: string;
   onToggle: (goal: Goal, payload: { proofImageUrl?: string | null; textResponse?: string | null; numericValue?: number | null; completed: boolean }) => Promise<void>;
 }
 
-export function GoalChecklist({ goals, checkins, userId, onToggle }: GoalChecklistProps) {
+export function GoalChecklist({ goals, checkins, userId, selectedDate, onToggle }: GoalChecklistProps) {
   if (goals.length === 0) {
     return <EmptyState icon={ListChecks} title="No goals yet" description="Add goals to make this challenge trackable." />;
   }
@@ -22,6 +23,7 @@ export function GoalChecklist({ goals, checkins, userId, onToggle }: GoalCheckli
           goal={goal}
           checkin={checkins.find((checkin) => checkin.goal_id === goal.id && checkin.user_id === userId)}
           userId={userId}
+          selectedDate={selectedDate}
           onToggle={onToggle}
         />
       ))}

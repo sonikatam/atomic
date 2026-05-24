@@ -12,7 +12,7 @@ import type {
   UpdateChallengeInput,
 } from '../types';
 import { calculateChallengeStreaks, getRequiredCompleted, isDayComplete } from './streakService';
-import { createMockChallenge, getMockChallengeDetail, getMockChallenges, getMockDashboard, joinMockChallenge, updateMockChallenge } from './mockStore';
+import { createMockChallenge, deleteMockChallenge, getMockChallengeDetail, getMockChallenges, getMockDashboard, joinMockChallenge, updateMockChallenge } from './mockStore';
 
 export async function getDashboardData(userId: string) {
   if (!hasSupabaseEnv || !supabase) return getMockDashboard(userId);
@@ -192,6 +192,16 @@ export async function updateChallenge(input: UpdateChallengeInput, userId: strin
   }
 
   return buildSupabaseSummary(challenge as Challenge, userId);
+}
+
+export async function deleteChallenge(challengeId: string, userId: string) {
+  if (!hasSupabaseEnv || !supabase) {
+    deleteMockChallenge(challengeId, userId);
+    return;
+  }
+
+  const { error } = await supabase.from('challenges').delete().eq('id', challengeId).eq('created_by', userId);
+  if (error) throw error;
 }
 
 export async function joinChallengeByInviteCode(inviteCode: string, userId: string) {

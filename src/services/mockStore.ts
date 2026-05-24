@@ -255,6 +255,24 @@ export function updateMockChallenge(input: UpdateChallengeInput, userId: string)
   return buildSummary(state.challenges[challengeIndex], userId, state);
 }
 
+export function deleteMockChallenge(challengeId: string, userId: string) {
+  const state = getMockState();
+  const challenge = state.challenges.find((item) => item.id === challengeId && item.created_by === userId);
+  if (!challenge) throw new Error('You can only delete challenges you created.');
+
+  const goalIds = new Set(state.goals.filter((goal) => goal.challenge_id === challengeId).map((goal) => goal.id));
+  const feedIds = new Set(state.feed.filter((item) => item.challenge_id === challengeId).map((item) => item.id));
+
+  state.challenges = state.challenges.filter((item) => item.id !== challengeId);
+  state.members = state.members.filter((member) => member.challenge_id !== challengeId);
+  state.goals = state.goals.filter((goal) => goal.challenge_id !== challengeId);
+  state.checkins = state.checkins.filter((checkin) => checkin.challenge_id !== challengeId && !goalIds.has(checkin.goal_id));
+  state.feed = state.feed.filter((item) => item.challenge_id !== challengeId);
+  state.reactions = state.reactions.filter((reaction) => !feedIds.has(reaction.activity_id));
+
+  saveMockState(state);
+}
+
 export function joinMockChallenge(inviteCode: string, userId: string) {
   const state = getMockState();
   const challenge = state.challenges.find((item) => item.invite_code?.toLowerCase() === inviteCode.trim().toLowerCase());
@@ -268,8 +286,8 @@ export function joinMockChallenge(inviteCode: string, userId: string) {
 
 export function upsertMockCheckin(payload: CheckinPayload) {
   const state = getMockState();
-  const today = todayISO();
-  const existingIndex = state.checkins.findIndex((checkin) => checkin.goal_id === payload.goal.id && checkin.user_id === payload.userId && checkin.checkin_date === today);
+  const existingIndex = state.checkins.findIndex((checkin) => checkin.goal_id === payload.goal.id && checkin.user_id === payload.userId && checkin.checkin_date === payload.checkinDate);
+  const wasCompleted = existingIndex >= 0 ? state.checkins[existingIndex].completed : false;
   const completed = payload.completed;
   if (completed && payload.goal.proof_type === 'photo' && !payload.proofImageUrl) throw new Error('Add a photo proof before completing this goal.');
   if (completed && payload.goal.proof_type === 'text' && !payload.textResponse?.trim()) throw new Error('Add a text response before completing this goal.');
@@ -280,7 +298,7 @@ export function upsertMockCheckin(payload: CheckinPayload) {
     challenge_id: payload.challengeId,
     goal_id: payload.goal.id,
     user_id: payload.userId,
-    checkin_date: today,
+    checkin_date: payload.checkinDate,
     completed,
     proof_image_url: payload.proofImageUrl || null,
     text_response: payload.textResponse || null,
@@ -292,7 +310,7 @@ export function upsertMockCheckin(payload: CheckinPayload) {
 
   const challenge = state.challenges.find((item) => item.id === payload.challengeId);
   const profile = state.profiles.find((item) => item.id === payload.userId);
-  if (challenge?.type === 'group' && completed) {
+  if (challenge?.type === 'group' && completed && !wasCompleted) {
     state.feed.unshift({
       id: uid('feed'),
       challenge_id: payload.challengeId,

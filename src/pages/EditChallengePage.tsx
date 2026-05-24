@@ -1,10 +1,10 @@
-import { Save } from 'lucide-react';
+import { Save, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { CreateGoalForm } from '../components/CreateGoalForm';
 import { LoadingState } from '../components/LoadingState';
 import { useAuth } from '../context/AuthContext';
-import { getChallengeDetail, updateChallenge } from '../services/challengeService';
+import { deleteChallenge, getChallengeDetail, updateChallenge } from '../services/challengeService';
 import type { ChallengeDetail, NewGoalInput } from '../types';
 
 export function EditChallengePage({ selfOnly = false }: { selfOnly?: boolean }) {
@@ -21,6 +21,7 @@ export function EditChallengePage({ selfOnly = false }: { selfOnly?: boolean }) 
   const [goals, setGoals] = useState<NewGoalInput[]>([]);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -86,6 +87,23 @@ export function EditChallengePage({ selfOnly = false }: { selfOnly?: boolean }) 
     }
   }
 
+  async function handleDelete() {
+    if (!detail || !profile || deleting) return;
+    const confirmed = window.confirm(`Delete "${detail.name}"? This will remove the challenge, goals, check-ins, and activity feed.`);
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setError('');
+    try {
+      await deleteChallenge(detail.id, profile.id);
+      navigate(detail.type === 'self' ? '/self' : '/challenges');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not delete challenge.');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   return (
     <div className="space-y-5">
       <div className="mx-auto max-w-3xl">
@@ -113,6 +131,24 @@ export function EditChallengePage({ selfOnly = false }: { selfOnly?: boolean }) 
           {saving ? 'Saving...' : 'Save changes'}
         </button>
       </form>
+
+      <section className="mx-auto max-w-3xl rounded-xl border border-red-200 bg-red-50 p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-red-950">Delete challenge</h2>
+            <p className="mt-1 text-sm leading-6 text-red-700">Remove this challenge and all of its saved progress.</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting || saving}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Trash2 className="h-5 w-5" />
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </div>
+      </section>
     </div>
   );
 }

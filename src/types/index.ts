@@ -152,6 +152,7 @@ export interface CheckinPayload {
   challengeId: string;
   goal: Goal;
   userId: string;
+  checkinDate: string;
   completed: boolean;
   proofImageUrl?: string | null;
   textResponse?: string | null;

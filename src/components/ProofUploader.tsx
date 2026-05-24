@@ -6,19 +6,20 @@ interface ProofUploaderProps {
   userId: string;
   challengeId: string;
   goalId: string;
+  checkinDate: string;
   value?: string | null;
-  onChange: (url: string) => void;
+  onChange: (url: string) => void | Promise<void>;
 }
 
-export function ProofUploader({ userId, challengeId, goalId, value, onChange }: ProofUploaderProps) {
+export function ProofUploader({ userId, challengeId, goalId, checkinDate, value, onChange }: ProofUploaderProps) {
   const [loading, setLoading] = useState(false);
 
   async function handleFile(file?: File) {
     if (!file) return;
     setLoading(true);
     try {
-      const url = await uploadProof(file, userId, challengeId, goalId);
-      onChange(url);
+      const url = await uploadProof(file, userId, challengeId, goalId, checkinDate);
+      await onChange(url);
     } finally {
       setLoading(false);
     }

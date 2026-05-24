@@ -19,6 +19,7 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
   const { profile } = useAuth();
   const [detail, setDetail] = useState<ChallengeDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(todayISO());
 
   const load = useCallback(async () => {
     if (!id || !profile) return;
@@ -32,14 +33,24 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (!detail) return;
+    const maxEditableDate = detail.end_date < todayISO() ? detail.end_date : todayISO();
+    if (detail.start_date > todayISO()) return;
+    if (selectedDate < detail.start_date) setSelectedDate(detail.start_date);
+    if (selectedDate > maxEditableDate) setSelectedDate(maxEditableDate);
+  }, [detail, selectedDate]);
+
   if (loading) return <LoadingState />;
   if (!detail) return <Navigate to="/dashboard" replace />;
   if (selfOnly && detail.type !== 'self') return <Navigate to={`/challenges/${detail.id}`} replace />;
 
   const isSelf = detail.type === 'self';
   const canEdit = detail.created_by === profile?.id;
-  const todayCheckins = detail.checkins.filter((checkin) => checkin.checkin_date === todayISO());
+  const selectedDateCheckins = detail.checkins.filter((checkin) => checkin.checkin_date === selectedDate);
   const status = isBeforeToday(detail.start_date) ? (isBeforeToday(detail.end_date) ? 'Ended' : 'Active') : isAfterToday(detail.start_date) ? 'Not started' : 'Active';
+  const maxEditableDate = detail.end_date < todayISO() ? detail.end_date : todayISO();
+  const canEditDays = detail.start_date <= todayISO();
 
   async function handleToggle(goal: Goal, payload: { proofImageUrl?: string | null; textResponse?: string | null; numericValue?: number | null; completed: boolean }) {
     if (!profile || !detail) return;
@@ -47,6 +58,7 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
       challengeId: detail.id,
       goal,
       userId: profile.id,
+      checkinDate: selectedDate,
       completed: payload.completed,
       proofImageUrl: payload.proofImageUrl,
       textResponse: payload.textResponse,
@@ -109,11 +121,20 @@ export function ChallengeDetailPage({ selfOnly = false }: { selfOnly?: boolean }
 
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <section>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-zinc-950">Today’s goals</h2>
-            <span className="rounded-md bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-500">{todayISO()}</span>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold text-zinc-950">{selectedDate === todayISO() ? 'Today’s goals' : 'Daily goals'}</h2>
+            <input
+              type="date"
+              value={selectedDate}
+              min={detail.start_date}
+              max={maxEditableDate}
+              disabled={!canEditDays}
+              onChange={(event) => setSelectedDate(event.target.value)}
+              className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 outline-none ring-zinc-900/10 focus:border-zinc-400 focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
+              aria-label="Select check-in date"
+            />
           </div>
-          <GoalChecklist goals={detail.goals} checkins={todayCheckins} userId={profile!.id} onToggle={handleToggle} />
+          <GoalChecklist goals={detail.goals} checkins={selectedDateCheckins} userId={profile!.id} selectedDate={selectedDate} onToggle={handleToggle} />
           {isSelf ? (
             <div className="mt-5 rounded-xl border border-zinc-200 bg-white p-5">
               <div className="mb-4 flex items-center justify-between">
