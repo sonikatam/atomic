@@ -1,6 +1,6 @@
 # atomic
 
-https://atomic-accountability.vercel.app
+https://atomic-everyday.vercel.app
 
 My friends and I use it to stay accountable.
 
